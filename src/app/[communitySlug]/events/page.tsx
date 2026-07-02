@@ -58,9 +58,9 @@ export default async function EventsPage({ params }: CommunityPageProps) {
           <article key={event.id}>
             <div className="rounded-lg border-2 border-dashed border-gray-300 bg-white p-12 m-5 text-left">
             <h2 className="text-lg font-bold text-gray-700">{event.name}</h2>
-            <p className="text-lg font-medium text-gray-400">{event.description}</p>
-            <p className="text-lg font-medium text-gray-400">Start: {event.startTime.toLocaleString()}</p>
-            <p className="text-lg font-medium text-gray-400">End: {event.endTime.toLocaleString()}</p>
+            <p className="text-lg font-medium text-blue-400">{event.description}</p>
+            <p className="text-lg font-medium text-blue-400">Start: {event.startTime.toLocaleString()}</p>
+            <p className="text-lg font-medium text-blue-400">End: {event.endTime.toLocaleString()}</p>
             </div>
           </article>
         ))}
