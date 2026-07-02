@@ -52,20 +52,20 @@ export default async function EventsPage({ params }: CommunityPageProps) {
       {/* PLACEHOLDER: Events list will go here.                 */}
       {/* See Tickets #2, #5, and #9.                            */}
       {/* ====================================================== */}
-      <div className="rounded-lg border-2 border-dashed border-gray-300 bg-white p-12 text-left">
+      {/* <div className="rounded-lg border-2 border-dashed border-gray-300 bg-white p-12 text-left"> */}
       <div>
         {communityEvents.map((event) => (
           <article key={event.id}>
-            <h2 className="text-lg font-bold text-gray-500">{event.name}</h2>
-            <p className="text-lg font-medium text-blue-400">
-            <p>{event.description}</p>
-            <p>Start: {event.startTime.toLocaleString()}</p>
-            <p>End: {event.endTime.toLocaleString()}</p>
-            </p>
+            <div className="rounded-lg border-2 border-dashed border-gray-300 bg-white p-12 m-5 text-left">
+            <h2 className="text-lg font-bold text-gray-700">{event.name}</h2>
+            <p className="text-lg font-medium text-gray-400">{event.description}</p>
+            <p className="text-lg font-medium text-gray-400">Start: {event.startTime.toLocaleString()}</p>
+            <p className="text-lg font-medium text-gray-400">End: {event.endTime.toLocaleString()}</p>
+            </div>
           </article>
         ))}
       </div>
-      </div>
+      {/* </div> */}
       {/* <div className="rounded-lg border-2 border-dashed border-gray-300 bg-white p-12 text-center">
         <p className="text-lg font-medium text-gray-400">
 
