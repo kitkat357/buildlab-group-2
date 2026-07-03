@@ -1,5 +1,5 @@
 import { db } from "@/db";
-import { communities } from "@/db/schema";
+import { communities, resources } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { notFound } from "next/navigation";
 import CommunityNav from "@/components/CommunityNav";
@@ -32,6 +32,11 @@ export default async function CommunityPage({ params }: CommunityPageProps) {
     notFound();
   }
 
+  const communityResources = await db
+    .select()
+    .from(resources)
+    .where(eq(resources.communityId, community.id));
+
   return (
     <div>
       <div className="mb-8">
@@ -41,18 +46,41 @@ export default async function CommunityPage({ params }: CommunityPageProps) {
 
       <CommunityNav slug={community.slug} activeTab="home" />
 
-      {/* ====================================================== */}
-      {/* PLACEHOLDER: Posts and Resources will go here.          */}
-      {/* See Tickets #1, #3, #4, #6, and #10.                   */}
-      {/* ====================================================== */}
-      <div className="rounded-lg border-2 border-dashed border-gray-300 bg-white p-12 text-center">
-        <p className="text-lg font-medium text-gray-400">
-          📝 Posts and Resources will appear here
-        </p>
-        <p className="mt-2 text-sm text-gray-400">
-          Check your tickets to get started!
-        </p>
-      </div>
+      <section>
+        <h2 className="mb-4 text-xl font-semibold text-gray-900">
+          Helpful Resources
+        </h2>
+
+        {communityResources.length > 0 ? (
+          <div className="space-y-3">
+            {communityResources.map((resource) => (
+              <a
+                key={resource.id}
+                href={resource.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block rounded-lg border border-gray-200 bg-white p-5 shadow-sm transition-shadow hover:shadow-md"
+              >
+                <h3 className="text-lg font-semibold text-gray-900 hover:text-blue-600">
+                  {resource.title}
+                </h3>
+                <p className="mt-2 text-sm text-gray-600">
+                  {resource.description}
+                </p>
+                <span className="mt-3 block break-all text-sm font-medium text-blue-600">
+                  {resource.url}
+                </span>
+              </a>
+            ))}
+          </div>
+        ) : (
+          <div className="rounded-lg border border-gray-200 bg-white p-6 text-center">
+            <p className="text-sm text-gray-500">
+              No resources have been shared yet.
+            </p>
+          </div>
+        )}
+      </section>
     </div>
   );
 }
