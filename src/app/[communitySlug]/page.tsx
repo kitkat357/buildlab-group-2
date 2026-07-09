@@ -1,6 +1,6 @@
 import { db } from "@/db";
-import { communities } from "@/db/schema";
-import { eq } from "drizzle-orm";
+import { communities, posts, users } from "@/db/schema";
+import { desc, eq } from "drizzle-orm";
 import { notFound } from "next/navigation";
 import CommunityNav from "@/components/CommunityNav";
 import type { CommunityPageProps } from "@/types";
@@ -9,7 +9,6 @@ import type { CommunityPageProps } from "@/types";
 // COMMUNITY HOMEPAGE
 // ============================================================
 // This is the main page for a specific community.
-// Right now it just shows the community name and description.
 //
 // YOUR TICKETS WILL ADD:
 // - Ticket #1 (Person A): Display a list of posts here
@@ -32,6 +31,18 @@ export default async function CommunityPage({ params }: CommunityPageProps) {
     notFound();
   }
 
+  const communityPosts = await db
+    .select({
+      id: posts.id,
+      title: posts.title,
+      createdAt: posts.createdAt,
+      authorName: users.name,
+    })
+    .from(posts)
+    .innerJoin(users, eq(posts.authorId, users.id))
+    .where(eq(posts.communityId, community.id))
+    .orderBy(desc(posts.createdAt));
+
   return (
     <div>
       <div className="mb-8">
@@ -41,18 +52,33 @@ export default async function CommunityPage({ params }: CommunityPageProps) {
 
       <CommunityNav slug={community.slug} activeTab="home" />
 
-      {/* ====================================================== */}
-      {/* PLACEHOLDER: Posts and Resources will go here.          */}
-      {/* See Tickets #1, #3, #4, #6, and #10.                   */}
-      {/* ====================================================== */}
-      <div className="rounded-lg border-2 border-dashed border-gray-300 bg-white p-12 text-center">
-        <p className="text-lg font-medium text-gray-400">
-          📝 Posts and Resources will appear here
-        </p>
-        <p className="mt-2 text-sm text-gray-400">
-          Check your tickets to get started!
-        </p>
-      </div>
+      <section className="rounded-lg border border-gray-200 bg-white p-6">
+        <h2 className="text-xl font-semibold text-gray-900">Community Posts</h2>
+
+        {communityPosts.length === 0 ? (
+          <p className="mt-4 text-sm text-gray-500">
+            No posts have been shared in this community yet.
+          </p>
+        ) : (
+          <ul className="mt-4 divide-y divide-gray-200">
+            {communityPosts.map((post) => (
+              <li key={post.id} className="py-4 first:pt-0 last:pb-0">
+                <h3 className="text-lg font-medium text-gray-900">
+                  {post.title}
+                </h3>
+                <p className="mt-1 text-sm text-gray-500">
+                  By {post.authorName} &middot;{" "}
+                  {post.createdAt.toLocaleDateString("en-US", {
+                    month: "short",
+                    day: "numeric",
+                    year: "numeric",
+                  })}
+                </p>
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
     </div>
   );
 }
