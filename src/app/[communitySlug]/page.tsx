@@ -3,6 +3,7 @@ import { communities, resources } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { notFound } from "next/navigation";
 import CommunityNav from "@/components/CommunityNav";
+import NewResourceForm from "@/components/NewResourceForm";
 import type { CommunityPageProps } from "@/types";
 
 // ============================================================
@@ -47,9 +48,12 @@ export default async function CommunityPage({ params }: CommunityPageProps) {
       <CommunityNav slug={community.slug} activeTab="home" />
 
       <section>
-        <h2 className="mb-4 text-xl font-semibold text-gray-900">
-          Helpful Resources
-        </h2>
+        <div className="mb-4 flex items-center justify-between gap-4">
+          <h2 className="text-xl font-semibold text-gray-900">
+            Helpful Resources
+          </h2>
+          <NewResourceForm communityId={community.id} />
+        </div>
 
         {communityResources.length > 0 ? (
           <div className="space-y-3">
