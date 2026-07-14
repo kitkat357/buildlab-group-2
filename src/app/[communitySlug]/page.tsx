@@ -1,5 +1,5 @@
 import { db } from "@/db";
-import { communities } from "@/db/schema";
+import { communities, posts } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { notFound } from "next/navigation";
 import CommunityNav from "@/components/CommunityNav";
@@ -31,6 +31,13 @@ export default async function CommunityPage({ params }: CommunityPageProps) {
   if (!community) {
     notFound();
   }
+
+  const communityPosts = await db
+    .select()
+    .from(posts)
+    .where(eq(posts.communityId, community.id));
+
+  console.log(communityPosts);
 
   return (
     <div>
