@@ -3,6 +3,7 @@ import { communities, posts, users } from "@/db/schema";
 import { desc, eq } from "drizzle-orm";
 import { notFound } from "next/navigation";
 import CommunityNav from "@/components/CommunityNav";
+import NewPostForm from "@/components/NewPostForm";
 import type { CommunityPageProps } from "@/types";
 
 // ============================================================
@@ -45,9 +46,13 @@ export default async function CommunityPage({ params }: CommunityPageProps) {
 
   return (
     <div>
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">{community.name}</h1>
-        <p className="mt-2 text-gray-600">{community.description}</p>
+      <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900">{community.name}</h1>
+          <p className="mt-2 text-gray-600">{community.description}</p>
+        </div>
+
+        <NewPostForm communityId={community.id} />
       </div>
 
       <CommunityNav slug={community.slug} activeTab="home" />
