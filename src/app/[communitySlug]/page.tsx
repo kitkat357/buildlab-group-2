@@ -1,9 +1,8 @@
 import { db } from "@/db";
-import { communities, posts } from "@/db/schema";
+import { communities } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { notFound } from "next/navigation";
 import CommunityNav from "@/components/CommunityNav";
-import NewPostForm from "@/components/NewPostForm";
 import type { CommunityPageProps } from "@/types";
 
 // ============================================================
@@ -33,13 +32,6 @@ export default async function CommunityPage({ params }: CommunityPageProps) {
     notFound();
   }
 
-  const communityPosts = await db
-    .select()
-    .from(posts)
-    .where(eq(posts.communityId, community.id));
-
-  console.log(communityPosts);
-
   return (
     <div>
       <div className="mb-8">
@@ -48,10 +40,6 @@ export default async function CommunityPage({ params }: CommunityPageProps) {
       </div>
 
       <CommunityNav slug={community.slug} activeTab="home" />
-
-      <div className="mb-8">
-        <NewPostForm communityId={community.id} />
-      </div>
 
       {/* ====================================================== */}
       {/* PLACEHOLDER: Posts and Resources will go here.          */}
