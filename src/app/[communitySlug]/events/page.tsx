@@ -3,6 +3,7 @@ import { communities, events } from "@/db/schema";
 import { asc, eq } from "drizzle-orm";
 import { notFound } from "next/navigation";
 import CommunityNav from "@/components/CommunityNav";
+import NewEventForm from "@/components/NewEventForm";
 import type { CommunityPageProps } from "@/types";
 
 // ============================================================
@@ -47,6 +48,10 @@ export default async function EventsPage({ params }: CommunityPageProps) {
       </div>
 
       <CommunityNav slug={community.slug} activeTab="events" />
+
+      <div className="mb-8">
+        <NewEventForm communityId={community.id}/>
+      </div>
 
       {/* ====================================================== */}
       {/* PLACEHOLDER: Events list will go here.                 */}
