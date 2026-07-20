@@ -1,10 +1,13 @@
 import { db } from "@/db";
-import { communities, events } from "@/db/schema";
-import { asc, eq } from "drizzle-orm";
+import { communities, events, eventRSVPs } from "@/db/schema";
+import { asc, eq, inArray } from "drizzle-orm";
 import { notFound } from "next/navigation";
 import CommunityNav from "@/components/CommunityNav";
 import NewEventForm from "@/components/NewEventForm";
 import type { CommunityPageProps } from "@/types";
+import { cookies } from "next/headers";
+import { DEV_AUTH_COOKIE_NAME } from "@/lib/auth-session";
+import Button from "@/components/Button";
 
 // ============================================================
 // EVENTS PAGE
@@ -19,6 +22,8 @@ import type { CommunityPageProps } from "@/types";
 
 export default async function EventsPage({ params }: CommunityPageProps) {
   const { communitySlug } = await params;
+  const cookieStore = await cookies();
+  const currUserId = cookieStore.get(DEV_AUTH_COOKIE_NAME)?.value ?? null;
 
   const community = await db
     .select()
@@ -35,6 +40,26 @@ export default async function EventsPage({ params }: CommunityPageProps) {
     .from(events)
     .where(eq(events.communityId, community.id))
     .orderBy(asc(events.startTime));
+  const eventIds = communityEvents.map((event) => event.id);
+  const rsvps = 
+    eventIds.length == 0
+      ? []
+      : await db
+          .select()
+          .from(eventRSVPs)
+          .where(inArray(eventRSVPs.eventId, eventIds));
+  const rsvpCountsByEventId = new Map<string, number>();
+
+  for (const rsvp of rsvps) {
+    const currentCount = rsvpCountsByEventId.get(rsvp.eventId) ?? 0;
+    rsvpCountsByEventId.set(rsvp.eventId, currentCount + 1);
+  }
+
+  const currentUserRSVPEventIds = new Set(
+  rsvps
+    .filter((rsvp) => rsvp.userId === currUserId)
+    .map((rsvp) => rsvp.eventId),
+  );
 
   return (
     <div>
@@ -59,27 +84,34 @@ export default async function EventsPage({ params }: CommunityPageProps) {
       {/* ====================================================== */}
       {/* <div className="rounded-lg border-2 border-dashed border-gray-300 bg-white p-12 text-left"> */}
       <div>
-        {communityEvents.map((event) => (
-          <article key={event.id}>
-            <div className="rounded-lg border-2 border-dashed border-gray-300 bg-white p-12 m-5 text-left">
-            <h2 className="text-lg font-bold text-gray-700">{event.name}</h2>
-            <p className="text-lg font-medium text-blue-400">{event.description}</p>
-            <p className="text-lg font-medium text-blue-400">Start: {event.startTime.toLocaleString()}</p>
-            <p className="text-lg font-medium text-blue-400">End: {event.endTime.toLocaleString()}</p>
-            </div>
-          </article>
-        ))}
-      </div>
-      {/* </div> */}
-      {/* <div className="rounded-lg border-2 border-dashed border-gray-300 bg-white p-12 text-center">
-        <p className="text-lg font-medium text-gray-400">
+      {communityEvents.map((event) => {
+          const rsvpCount = rsvpCountsByEventId.get(event.id) ?? 0;
+          const isAttending = currentUserRSVPEventIds.has(event.id);
 
-          📅 Events will appear here
-        </p>
-        <p className="mt-2 text-sm text-gray-400">
-          Check your tickets to get started!
-        </p>
-      </div> */}
+          const buttonLabel = !currUserId
+            ? "Log in to RSVP"
+            : isAttending
+              ? "Attending"
+              : "RSVP";
+
+          const buttonDisabled = !currUserId || isAttending;
+
+          return (
+            <article key={event.id}>
+              <div className="rounded-lg border-2 border-dashed border-gray-300 bg-white p-12 m-5 text-left">
+                <h2 className="text-lg font-bold text-gray-700">{event.name}</h2>
+                <p className="text-lg font-medium text-blue-400">{event.description}</p>
+                <p className="text-lg font-medium text-blue-400">Start: {event.startTime.toLocaleString()}</p>
+                <p className="text-lg font-medium text-blue-400">End: {event.endTime.toLocaleString()}</p>
+                <p>{rsvpCount} attending</p>
+                <form method="POST" action={`/api/events/${event.id}/rsvp`}>
+                  <Button label={buttonLabel} type="submit" disabled={buttonDisabled} />
+                </form>
+              </div>
+            </article>
+          );
+        })}
+      </div>
     </div>
   );
 }
