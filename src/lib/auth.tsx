@@ -46,12 +46,14 @@ if (
 
 type AuthContextType = {
   user: User | null;
+  ready: boolean;
   login: (user: User) => void;
   logout: () => void;
 };
 
 const AuthContext = createContext<AuthContextType>({
   user: null,
+  ready: false,
   login: () => {},
   logout: () => {},
 });
@@ -59,6 +61,7 @@ const AuthContext = createContext<AuthContextType>({
 export function AuthProvider({ children }: { children: ReactNode }) {
   const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
+  const [ready, setReady] = useState(false);
 
   // Restore login state from cookie on page load
   useEffect(() => {
@@ -67,6 +70,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (cookieUser) {
       setUser(cookieUser);
     }
+    setReady(true);
   }, []);
 
   const login = (user: User) => {
@@ -91,7 +95,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout }}>
+    <AuthContext.Provider value={{ user, ready, login, logout }}>
       {children}
     </AuthContext.Provider>
   );

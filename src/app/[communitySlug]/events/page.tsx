@@ -1,8 +1,9 @@
 import { db } from "@/db";
-import { communities } from "@/db/schema";
-import { eq } from "drizzle-orm";
+import { communities, events } from "@/db/schema";
+import { asc, eq } from "drizzle-orm";
 import { notFound } from "next/navigation";
 import CommunityNav from "@/components/CommunityNav";
+import NewEventForm from "@/components/NewEventForm";
 import type { CommunityPageProps } from "@/types";
 
 // ============================================================
@@ -29,6 +30,12 @@ export default async function EventsPage({ params }: CommunityPageProps) {
     notFound();
   }
 
+  const communityEvents = await db
+    .select()
+    .from(events)
+    .where(eq(events.communityId, community.id))
+    .orderBy(asc(events.startTime));
+
   return (
     <div>
       <div className="mb-8">
@@ -42,18 +49,37 @@ export default async function EventsPage({ params }: CommunityPageProps) {
 
       <CommunityNav slug={community.slug} activeTab="events" />
 
+      <div className="mb-8">
+        <NewEventForm communityId={community.id}/>
+      </div>
+
       {/* ====================================================== */}
       {/* PLACEHOLDER: Events list will go here.                 */}
       {/* See Tickets #2, #5, and #9.                            */}
       {/* ====================================================== */}
-      <div className="rounded-lg border-2 border-dashed border-gray-300 bg-white p-12 text-center">
+      {/* <div className="rounded-lg border-2 border-dashed border-gray-300 bg-white p-12 text-left"> */}
+      <div>
+        {communityEvents.map((event) => (
+          <article key={event.id}>
+            <div className="rounded-lg border-2 border-dashed border-gray-300 bg-white p-12 m-5 text-left">
+            <h2 className="text-lg font-bold text-gray-700">{event.name}</h2>
+            <p className="text-lg font-medium text-blue-400">{event.description}</p>
+            <p className="text-lg font-medium text-blue-400">Start: {event.startTime.toLocaleString()}</p>
+            <p className="text-lg font-medium text-blue-400">End: {event.endTime.toLocaleString()}</p>
+            </div>
+          </article>
+        ))}
+      </div>
+      {/* </div> */}
+      {/* <div className="rounded-lg border-2 border-dashed border-gray-300 bg-white p-12 text-center">
         <p className="text-lg font-medium text-gray-400">
+
           📅 Events will appear here
         </p>
         <p className="mt-2 text-sm text-gray-400">
           Check your tickets to get started!
         </p>
-      </div>
+      </div> */}
     </div>
   );
 }
