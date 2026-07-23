@@ -3,7 +3,6 @@ import { config } from "dotenv";
 // but tsx doesn't, so we need to do it manually for the seed script)
 config({ path: ".env.local" });
 
-import { db } from "./index";
 import * as schema from "./schema";
 import { sql } from "drizzle-orm";
 
@@ -18,6 +17,8 @@ import { sql } from "drizzle-orm";
 // ============================================================
 
 async function seed() {
+  const { db } = await import("./index");
+
   console.log("🌱 Seeding database...");
 
   // Clear existing data (in reverse order of dependencies)
@@ -207,42 +208,90 @@ async function seed() {
     },
     {
       id: "resource-2",
-      title: "AI Art Ethics Reading List",
-      url: "https://example.com/ai-art-ethics",
+      title: "OpenAI Image Generation Guide",
+      url: "https://platform.openai.com/docs/guides/image-generation",
       description:
-        "A curated list of articles and papers about the ethical implications of AI-generated art.",
+        "Official OpenAI docs for generating and editing images with image models.",
       communityId: "community-1",
     },
     {
       id: "resource-3",
+      title: "Copyright and Artificial Intelligence",
+      url: "https://www.copyright.gov/ai/",
+      description:
+        "U.S. Copyright Office resources about copyright policy and artificial intelligence.",
+      communityId: "community-1",
+    },
+    {
+      id: "resource-4",
+      title: "Glaze Artist Protection Tool",
+      url: "https://glaze.cs.uchicago.edu/",
+      description:
+        "A University of Chicago project that helps artists protect their style from AI mimicry.",
+      communityId: "community-1",
+    },
+    {
+      id: "resource-5",
       title: "Godot Engine Documentation",
-      url: "https://docs.godotengine.org",
+      url: "https://docs.godotengine.org/en/stable/",
       description:
         "The official documentation for the Godot game engine. Covers everything from basics to advanced topics.",
       communityId: "community-2",
     },
     {
-      id: "resource-4",
-      title: "Free Sound Effects Library",
-      url: "https://freesound.org",
+      id: "resource-6",
+      title: "Unity Manual",
+      url: "https://docs.unity3d.com/Manual/index.html",
       description:
-        "A massive library of free, Creative Commons-licensed sound effects for your games.",
+        "Official Unity documentation for building games, scenes, assets, and gameplay systems.",
       communityId: "community-2",
     },
     {
-      id: "resource-5",
-      title: "How to Start a Community Garden",
-      url: "https://example.com/community-garden-guide",
+      id: "resource-7",
+      title: "itch.io Creator Docs",
+      url: "https://itch.io/docs/creators/getting-started",
       description:
-        "Step-by-step guide to starting a community garden in your neighborhood.",
+        "A guide to creating, publishing, and managing a game page on itch.io.",
+      communityId: "community-2",
+    },
+    {
+      id: "resource-8",
+      title: "Kenney Game Assets",
+      url: "https://kenney.nl/assets",
+      description:
+        "A large collection of game assets that are useful for prototypes and indie projects.",
+      communityId: "community-2",
+    },
+    {
+      id: "resource-9",
+      title: "EPA Climate Action Guide",
+      url: "https://www.epa.gov/climate-change/what-you-can-do-about-climate-change",
+      description:
+        "Practical actions people can take at home, at work, on the go, and in their communities.",
       communityId: "community-3",
     },
     {
-      id: "resource-6",
-      title: "Local Recycling Guide",
-      url: "https://example.com/recycling",
+      id: "resource-10",
+      title: "EPA Reduce, Reuse, Recycle",
+      url: "https://www.epa.gov/recycle",
       description:
-        "What goes in which bin? A clear guide to recycling in our city.",
+        "Recycling basics, composting guidance, electronics recycling, and waste reduction tips.",
+      communityId: "community-3",
+    },
+    {
+      id: "resource-11",
+      title: "Department of Energy: Energy Saver",
+      url: "https://www.energy.gov/energysaver/energy-saver",
+      description:
+        "Home energy audit, heating and cooling, and household energy-saving guidance.",
+      communityId: "community-3",
+    },
+    {
+      id: "resource-12",
+      title: "Community Gardening Toolkit",
+      url: "https://extension.missouri.edu/publications/mp906",
+      description:
+        "A practical guide for starting, organizing, and managing a community garden.",
       communityId: "community-3",
     },
   ];
