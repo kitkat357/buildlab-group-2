@@ -1,4 +1,4 @@
-import { pgTable, text, timestamp } from "drizzle-orm/pg-core";
+import { pgTable, text, timestamp, uniqueIndex } from "drizzle-orm/pg-core";
 
 // ============================================================
 // DATABASE SCHEMA — Community Hub
@@ -79,3 +79,18 @@ export const bookmarks = pgTable("bookmarks", {
     .references(() => posts.id),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
+
+export const eventRSVPs = pgTable("event_rsvp", {
+    id: text("id").primaryKey(),
+    eventId: text("event_id")
+      .notNull()
+      .references(() => events.id),
+    userId: text("user_id")
+      .notNull()
+      .references(() => users.id),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+  },
+  (table) =>  [
+    uniqueIndex("event_user_idx").on(table.eventId, table.userId),
+  ],
+)
