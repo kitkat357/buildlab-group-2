@@ -1,9 +1,11 @@
 import { db } from "@/db";
-import { posts, users, communities } from "@/db/schema";
-import { eq, and } from "drizzle-orm";
+import { posts, users, communities, comments } from "@/db/schema";
+import { eq, and, asc } from "drizzle-orm";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import type { PostPageProps } from "@/types";
+import CommentList from "@/components/CommentList";
+import NewCommentForm from "@/components/NewCommentForm";
 
 // ============================================================
 // POST DETAIL PAGE
@@ -47,6 +49,19 @@ export default async function PostDetailPage({ params }: PostPageProps) {
     notFound();
   }
 
+  const postComments = await db
+    .select({
+      id: comments.id,
+      text: comments.text,
+      createdAt: comments.createdAt,
+      authorName: users.name,
+      authorImage: users.image,
+    })
+    .from(comments)
+    .innerJoin(users, eq(comments.authorId, users.id))
+    .where(eq(comments.postId, postId))
+    .orderBy(asc(comments.createdAt));
+
   return (
     <div>
       <Link
@@ -78,17 +93,10 @@ export default async function PostDetailPage({ params }: PostPageProps) {
         <p className="mt-4 whitespace-pre-wrap text-gray-700">{post.content}</p>
       </article>
 
-      {/* ====================================================== */}
-      {/* PLACEHOLDER: Comments will go here.                    */}
-      {/* See Ticket #7 (Person A).                              */}
-      {/* ====================================================== */}
-      <div className="mt-6 rounded-lg border-2 border-dashed border-gray-300 bg-white p-8 text-center">
-        <p className="text-lg font-medium text-gray-400">
-          💬 Comments will appear here
-        </p>
-        <p className="mt-2 text-sm text-gray-400">
-          See Ticket #7 to build this!
-        </p>
+      <div className="mt-6 space-y-4">
+        <h2 className="text-lg font-semibold text-gray-900">Comments</h2>
+        <CommentList comments={postComments} />
+        <NewCommentForm postId={post.id} />
       </div>
     </div>
   );
