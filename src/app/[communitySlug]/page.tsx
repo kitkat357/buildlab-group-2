@@ -1,14 +1,11 @@
 import { db } from "@/db";
-import { communities, resources } from "@/db/schema";
-import { eq } from "drizzle-orm";
-import { notFound } from "next/navigation";
-import CommunityNav from "@/components/CommunityNav";
-import NewResourceForm from "@/components/NewResourceForm";
-import { communities, posts, users } from "@/db/schema";
+import { communities, posts, resources, users } from "@/db/schema";
 import { desc, eq } from "drizzle-orm";
+import NewResourceForm from "@/components/NewResourceForm";
 import { notFound } from "next/navigation";
 import CommunityNav from "@/components/CommunityNav";
 import NewPostForm from "@/components/NewPostForm";
+import ResourceSearch from "@/components/ResourceSearch";
 import type { CommunityPageProps } from "@/types";
 
 // ============================================================
@@ -74,35 +71,10 @@ export default async function CommunityPage({ params }: CommunityPageProps) {
           <NewResourceForm communityId={community.id} />
         </div>
 
-        {communityResources.length > 0 ? (
-          <div className="space-y-3">
-            {communityResources.map((resource) => (
-              <a
-                key={resource.id}
-                href={resource.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="block rounded-lg border border-gray-200 bg-white p-5 shadow-sm transition-shadow hover:shadow-md"
-              >
-                <h3 className="text-lg font-semibold text-gray-900 hover:text-blue-600">
-                  {resource.title}
-                </h3>
-                <p className="mt-2 text-sm text-gray-600">
-                  {resource.description}
-                </p>
-                <span className="mt-3 block break-all text-sm font-medium text-blue-600">
-                  {resource.url}
-                </span>
-              </a>
-            ))}
-          </div>
-        ) : (
-          <div className="rounded-lg border border-gray-200 bg-white p-6 text-center">
-            <p className="text-sm text-gray-500">
-              No resources have been shared yet.
-            </p>
-          </div>
-      <section className="rounded-lg border border-gray-200 bg-white p-6">
+        <ResourceSearch resources={communityResources} />
+      </section>
+
+      <section className="mt-8 rounded-lg border border-gray-200 bg-white p-6">
         <h2 className="text-xl font-semibold text-gray-900">Community Posts</h2>
 
         {communityPosts.length === 0 ? (
