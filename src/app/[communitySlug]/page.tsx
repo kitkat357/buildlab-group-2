@@ -1,11 +1,7 @@
 import { db } from "@/db";
-import { communities, resources } from "@/db/schema";
-import { eq } from "drizzle-orm";
-import { notFound } from "next/navigation";
-import CommunityNav from "@/components/CommunityNav";
-import NewResourceForm from "@/components/NewResourceForm";
-import { communities, posts, users } from "@/db/schema";
+import { communities, posts, resources, users } from "@/db/schema";
 import { desc, eq } from "drizzle-orm";
+import NewResourceForm from "@/components/NewResourceForm";
 import { notFound } from "next/navigation";
 import CommunityNav from "@/components/CommunityNav";
 import NewPostForm from "@/components/NewPostForm";
@@ -102,7 +98,10 @@ export default async function CommunityPage({ params }: CommunityPageProps) {
               No resources have been shared yet.
             </p>
           </div>
-      <section className="rounded-lg border border-gray-200 bg-white p-6">
+        )}
+      </section>
+
+      <section className="mt-8 rounded-lg border border-gray-200 bg-white p-6">
         <h2 className="text-xl font-semibold text-gray-900">Community Posts</h2>
 
         {communityPosts.length === 0 ? (
