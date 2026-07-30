@@ -19,12 +19,12 @@ export default async function HomePage() {
         <NewCommunityForm />
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-6 md:grid-cols-2">
         {allCommunities.map((community) => (
           <Link
             key={community.id}
             href={`/${community.slug}`}
-            className="group rounded-lg border border-gray-200 bg-white p-6 shadow-sm transition-shadow hover:shadow-md"
+            className="group rounded-lg bg-white p-6 transition-shadow hover:shadow-md"
           >
             <h2 className="text-lg font-semibold text-gray-900 group-hover:text-blue-600">
               {community.name}
