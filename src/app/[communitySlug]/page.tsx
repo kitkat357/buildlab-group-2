@@ -5,6 +5,7 @@ import NewResourceForm from "@/components/NewResourceForm";
 import { notFound } from "next/navigation";
 import CommunityNav from "@/components/CommunityNav";
 import NewPostForm from "@/components/NewPostForm";
+import ResourceSearch from "@/components/ResourceSearch";
 import type { CommunityPageProps } from "@/types";
 
 // ============================================================
@@ -70,6 +71,7 @@ export default async function CommunityPage({ params }: CommunityPageProps) {
           <NewResourceForm communityId={community.id} />
         </div>
 
+        <ResourceSearch resources={communityResources} />
         {communityResources.length > 0 ? (
           <div className="space-y-3">
             {communityResources.map((resource) => (
