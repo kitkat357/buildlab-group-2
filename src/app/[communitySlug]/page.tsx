@@ -1,4 +1,5 @@
 import { db } from "@/db";
+import NewResourceForm from "@/components/NewResourceForm";
 import { communities, posts, resources, users } from "@/db/schema";
 import { desc, eq } from "drizzle-orm";
 import NewResourceForm from "@/components/NewResourceForm";

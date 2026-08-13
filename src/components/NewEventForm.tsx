@@ -22,8 +22,21 @@ export default function NewEventForm({ communityId }: NewEventFormProps) {
   const { user } = useAuth();
   const router = useRouter();
 
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
+  function resetForm() {
+    setName("");
+    setDescription("");
+    setStartTime("");
+    setEndTime("");
+    setLocation("");
+  }
+
+  function closeDialog() {
+    setOpen(false);
+    setError(null);
+  }
+
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
     setError(null);
 
     if (!user) {
@@ -33,34 +46,32 @@ export default function NewEventForm({ communityId }: NewEventFormProps) {
 
     setPending(true);
 
-    const res = await fetch("/api/events", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        name,
-        description,
-        startTime,
-        endTime,
-        location,
-        communityId,
-      }),
-    });
+    try {
+      const res = await fetch("/api/events", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name,
+          description,
+          startTime,
+          endTime,
+          location,
+          communityId,
+        }),
+      });
 
-    setPending(false);
+      if (!res.ok) {
+        const data = await res.json();
+        setError(data.error ?? "Something went wrong.");
+        return;
+      }
 
-    if (!res.ok) {
-      const data = await res.json();
-      setError(data.error ?? "Something went wrong.");
-      return;
+      resetForm();
+      closeDialog();
+      router.refresh();
+    } finally {
+      setPending(false);
     }
-
-    setName("");
-    setDescription("");
-    setStartTime("");
-    setEndTime("");
-    setLocation("");
-    setOpen(false);
-    router.refresh();
   }
 
   return (
